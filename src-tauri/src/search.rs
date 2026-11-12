@@ -1,6 +1,10 @@
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
+#[cfg(all(unix, not(target_os = "macos")))]
+use std::sync::mpsc;
+#[cfg(all(unix, not(target_os = "macos")))]
+use std::time::Duration;
 
 use crate::rank::{score_name, Hit, HitKind, path_key};
 use crate::util::home_dir;
@@ -526,24 +530,42 @@ fn scan_desktop_files(out: &mut Vec<Hit>) {
         }
     }
     for root in roots {
-        let Ok(entries) = fs::read_dir(&root) else {
-            continue;
-        };
-        for entry in entries.flatten() {
-            let path = entry.path();
+        out.extend(desktop_hits_from(&root));
+    }
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn desktop_hits_from(root: &Path) -> Vec<Hit> {
+    let root = root.to_path_buf();
+    let (tx, rx) = mpsc::channel();
+    std::thread::spawn(move || {
+        let _ = tx.send(read_desktop_dir(&root));
+    });
+    rx.recv_timeout(Duration::from_secs(2)).unwrap_or_default()
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn read_desktop_dir(root: &Path) -> Vec<Hit> {
+    let Ok(entries) = fs::read_dir(root) else {
+        return Vec::new();
+    };
+    let mut hits = Vec::new();
+    for entry in entries.flatten() {
+        let path = entry.path();
         if path.extension().and_then(|ext| ext.to_str()) != Some("desktop") {
             continue;
         }
         let Ok(meta) = entry.metadata() else {
             continue;
         };
-        if meta.is_file() {
-            if let Some(hit) = parse_desktop_file(&path) {
-                out.push(hit);
-            }
+        if !meta.is_file() || meta.len() > 1_000_000 {
+            continue;
         }
+        if let Some(hit) = parse_desktop_file(&path) {
+            hits.push(hit);
         }
     }
+    hits
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
