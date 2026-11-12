@@ -396,7 +396,7 @@ fn launch_desktop(path: &str) -> Result<(), String> {
         if let Some((bin, args)) = parts.split_first() {
             let mut cmd = Command::new(bin);
             cmd.args(args);
-            return spawn_detached(cmd);
+            return spawn_detached(&mut cmd);
         }
     }
     Err("Could not launch that application".into())
@@ -472,7 +472,7 @@ fn open_terminal_windows(home: &Path, command: &str, flavor: ShellFlavor) -> Res
                 }
             }
         }
-        return spawn_detached(cmd);
+        return spawn_detached(&mut cmd);
     }
 
     match flavor {
@@ -486,7 +486,7 @@ fn open_terminal_windows(home: &Path, command: &str, flavor: ShellFlavor) -> Res
                         let script = format!("{command}; exec bash");
                         cmd.args(["-lc", &script]);
                     }
-                    spawn_detached(cmd)
+                    spawn_detached(&mut cmd)
                 }
                 BashHost::Wsl => {
                     let mut cmd = Command::new("wsl.exe");
@@ -496,7 +496,7 @@ fn open_terminal_windows(home: &Path, command: &str, flavor: ShellFlavor) -> Res
                         let script = format!("{command}; exec bash");
                         cmd.args(["-e", "bash", "-lc", &script]);
                     }
-                    spawn_detached(cmd)
+                    spawn_detached(&mut cmd)
                 }
             }
         }
@@ -507,7 +507,7 @@ fn open_terminal_windows(home: &Path, command: &str, flavor: ShellFlavor) -> Res
             if !command.is_empty() {
                 cmd.arg("-Command").arg(command);
             }
-            spawn_detached(cmd)
+            spawn_detached(&mut cmd)
         }
     }
 }
@@ -577,7 +577,7 @@ fn open_terminal_linux(home: &Path, command: &str) -> Result<(), String> {
             cmd.arg("-e").arg(&shell).arg("-c").arg(&script);
         }
     }
-    spawn_detached(cmd)
+    spawn_detached(&mut cmd)
 }
 
 pub fn suspend_computer() -> Result<(), String> {
@@ -628,7 +628,7 @@ fn run_program(program: &str, args: &[&str]) -> Result<(), String> {
     }
 }
 
-pub fn spawn_detached(mut cmd: Command) -> Result<(), String> {
+pub fn spawn_detached(cmd: &mut Command) -> Result<(), String> {
     cmd.stdin(Stdio::null());
     cmd.stdout(Stdio::null());
     cmd.stderr(Stdio::null());

@@ -6,6 +6,24 @@ It is a quick search bar, a calculator, and an original 2D function grapher. It 
 
 The grapher is not GeoGebra and not Desmos. It does not reuse their source, assets, or names. GeoGebra is a large GPL Java desktop application, which is the opposite of a lightweight native launcher, so TopCalc ships its own small expression parser and plotter instead. The license is MIT.
 
+## Install on another computer
+
+On Windows, open PowerShell in this folder and run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+```
+
+On macOS or Linux:
+
+```bash
+bash scripts/setup.sh
+```
+
+The script installs Rust when it is missing, installs Node.js on Windows when that is missing, and builds an installer. The first build can take several minutes. The finished installer is under `src-tauri/target/release/bundle`. Copy that file to the other computer and run it. After it is installed, TopCalc stays in the tray. **Alt+Space** opens it.
+
+A draft installer is also published from the GitHub **Release** action. Download the file for that computer instead of building there.
+
 ## Hotkey
 
 The default shortcut is **Alt+Space**. Cmd+Space fights Spotlight, and Ctrl+Space fights many input methods.
@@ -92,35 +110,16 @@ Enter on an app launches it. Enter on a file or folder opens it with the default
 
 ## Build and run
 
-Prerequisites:
-
-- [Rust](https://rustup.rs) stable (`rustc`, `cargo`)
-- Node.js 20 or newer (`npm`)
-- A WebView:
-  - **Windows:** WebView2. It is already part of Windows 11. On older Windows, install the [Evergreen runtime](https://developer.microsoft.com/microsoft-edge/webview2/).
-  - **macOS:** the system WebKit. Xcode Command Line Tools are required to compile.
-  - **Linux (Debian/Ubuntu):**
-
-```bash
-sudo apt update
-sudo apt install -y libwebkit2gtk-4.1-dev build-essential libssl-dev \
-  libayatana-appindicator3-dev librsvg2-dev patchelf libxdo-dev
-```
-
-From this directory:
+If Node.js and Rust are already installed, these do the same work as the setup script:
 
 ```bash
 npm install
 npm run tauri dev
 ```
 
-That builds the Rust host and serves the UI. The window stays hidden until **Alt+Space** or a left-click on the tray icon.
+`npm run tauri dev` builds the Rust host and serves the UI. The window stays hidden until **Alt+Space** or a left-click on the tray icon. `npm run tauri build` writes the installer.
 
-A production build:
-
-```bash
-npm run tauri build
-```
+WebView2 is already part of Windows 11. macOS uses the system WebKit and the Xcode Command Line Tools. Debian and Ubuntu need the packages installed by `scripts/setup.sh`.
 
 Check the UI and the Rust core without launching the window:
 

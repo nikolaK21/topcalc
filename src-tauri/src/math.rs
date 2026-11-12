@@ -666,7 +666,7 @@ fn is_known_name(name: &str, bounds: &[String]) -> bool {
     }
     matches!(
         name,
-        "x" | "pi" | "e" | "i" | "inf" | "infinity" | "oo" | "theta" | "sum" | "prod" | "product" | "lim" | "limit" | "int" | "integral"
+        "x" | "pi" | "e" | "exp" | "i" | "inf" | "infinity" | "oo" | "theta" | "sum" | "prod" | "product" | "lim" | "limit" | "int" | "integral"
     )     || Func::from_name(name).is_some()
 }
 
