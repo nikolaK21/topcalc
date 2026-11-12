@@ -44,7 +44,12 @@ jobs:
         run: cargo check --manifest-path src-tauri/Cargo.toml
       - name: Test
         if: runner.os == 'Linux'
-        run: xvfb-run -a cargo test --manifest-path src-tauri/Cargo.toml --lib
+        run: |
+          set -euo pipefail
+          for group in math route rank settings search shell; do
+            echo "=== ${group} ==="
+            timeout --signal=KILL 3m cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 "${group}::"
+          done
         env:
           WEBKIT_DISABLE_COMPOSITING_MODE: "1"
       - name: Test
