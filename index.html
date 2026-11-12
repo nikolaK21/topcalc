@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TopCalc</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      if (location.search.indexOf("desk=1") !== -1) {
+        document.documentElement.style.background = "#1c1c20";
+        document.body.style.background = "#1c1c20";
+        document.body.style.color = "#f3f4f6";
+        document.getElementById("app").textContent = "Loading graph…";
+      }
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

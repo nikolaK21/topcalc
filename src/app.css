@@ -1,0 +1,41 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  color: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+html[data-window="desk"],
+html[data-window="desk"] body,
+html[data-window="desk"] #app {
+  background: #1c1c20;
+}
+
+body {
+  user-select: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}
