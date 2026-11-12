@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "TopCalc",
+  "version": "0.1.0",
+  "identifier": "com.topcalc.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "TopCalc",
+        "width": 640,
+        "height": 120,
+        "minWidth": 520,
+        "minHeight": 72,
+        "resizable": true,
+        "maximizable": false,
+        "minimizable": false,
+        "closable": true,
+        "fullscreen": false,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "center": false,
+        "shadow": true,
+        "zoomHotkeysEnabled": false,
+        "backgroundColor": "#00000000"
+      },
+      {
+        "label": "desk",
+        "title": "TopCalc Graph",
+        "url": "index.html?desk=1",
+        "width": 1080,
+        "height": 700,
+        "minWidth": 760,
+        "minHeight": 480,
+        "resizable": true,
+        "maximizable": true,
+        "minimizable": true,
+        "closable": true,
+        "fullscreen": false,
+        "focus": false,
+        "transparent": false,
+        "decorations": true,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": false,
+        "center": true,
+        "shadow": true,
+        "backgroundColor": "#1c1c20"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

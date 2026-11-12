@@ -1,0 +1,24 @@
+{
+  "identifier": "default",
+  "description": "TopCalc main window",
+  "windows": ["main", "desk"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-outer-size",
+    "core:window:allow-outer-position",
+    "core:window:allow-current-monitor",
+    "core:window:allow-primary-monitor",
+    "core:window:allow-is-visible",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-unminimize",
+    "core:window:allow-center",
+    "core:event:default",
+    "core:event:allow-listen",
+    "core:event:allow-emit"
+  ]
+}

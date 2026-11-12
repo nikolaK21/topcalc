@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TopCalc guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c1c21;
+      --muted: #5c6370;
+      --line: #e4e6eb;
+      --paper: #ffffff;
+      --wash: #f4f6f8;
+      --accent: #2457d6;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--wash); }
+    body {
+      margin: 0 auto;
+      max-width: 42rem;
+      padding: 1.5rem 1.15rem 3rem;
+      font: 17px/1.5 "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    h1 { font-size: 2rem; line-height: 1.15; margin: 0 0 0.4rem; }
+    h2 { font-size: 1.25rem; margin: 1.8rem 0 0.5rem; }
+    h3 { font-size: 1.05rem; margin: 1.3rem 0 0.4rem; }
+    p, li { margin: 0.4rem 0; }
+    .lede { color: var(--muted); margin-bottom: 1.2rem; }
+    a { color: var(--accent); }
+    code, kbd {
+      font-family: Consolas, "SF Mono", ui-monospace, monospace;
+      font-size: 0.92em;
+    }
+    code { background: var(--wash); padding: 0.05em 0.3em; border-radius: 4px; }
+    kbd {
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 0 0.35em;
+      background: #fff;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 0.6rem 0 1rem; font-size: 0.95rem; }
+    th, td { text-align: left; vertical-align: top; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); }
+    th { font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    .wrap { overflow-x: auto; }
+    ul { padding-left: 1.2rem; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.45rem 0.8rem; margin: 0.8rem 0 1.2rem; font-size: 0.92rem; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.9rem; }
+    @media print {
+      html, body { background: white; }
+      body { max-width: none; padding: 0; }
+      a { color: inherit; text-decoration: none; }
+      h2 { break-after: avoid; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <h1>TopCalc</h1>
+  <p class="lede">A small offline launcher for Windows, macOS, and Linux. It stays in the tray. A hotkey shows the bar. It does not start a new process.</p>
+  <nav>
+    <a href="#open">Open</a>
+    <a href="#type">What to type</a>
+    <a href="#math">Calculator</a>
+    <a href="#graph">Graph</a>
+    <a href="#shell">Shell</a>
+    <a href="#files">Files</a>
+    <a href="#build">Build</a>
+    <a href="#limits">Limits</a>
+  </nav>
+  <p>The bar searches apps and files, evaluates math, plots in 2D, runs a shell command, or opens that command in a terminal. Nothing in the app calls the network. <strong>Search the web</strong> opens your browser. The license is MIT.</p>
+
+  <h2 id="open">Open it</h2>
+  <p>The default shortcut is <kbd>Alt</kbd>+<kbd>Space</kbd>. <kbd>Esc</kbd> hides the bar. A left-click on the tray icon also shows it.</p>
+  <p>On Windows, Alt+Space is also the system menu of a focused window. If the hotkey does not fire, change it: tray icon, then <kbd>Ctrl</kbd>+<kbd>,</kbd> or the gear.</p>
+  <ul>
+    <li>Type a shortcut such as <code>Alt+Space</code> or <code>Ctrl+Alt+Space</code>.</li>
+    <li>Or press <strong>Record</strong> and hit the keys. Recording suspends the current shortcut so it does not hide the window.</li>
+  </ul>
+  <p>Settings are one JSON file:</p>
+  <ul>
+    <li>Windows: <code>%APPDATA%\com.topcalc.app\settings.json</code></li>
+    <li>macOS: <code>~/Library/Application Support/com.topcalc.app/settings.json</code></li>
+    <li>Linux: <code>~/.config/com.topcalc.app/settings.json</code></li>
+  </ul>
+  <pre><code>{
+  "hotkey": "Ctrl+Alt+Space",
+  "searchUrl": "https://duckduckgo.com/?q={query}",
+  "theme": "dark",
+  "anchor": "top"
+}</code></pre>
+  <p><code>searchUrl</code> must be <code>http</code> or <code>https</code>. <code>{query}</code> or <code>%s</code> is replaced with the URL-encoded text. Launch at login is not implemented yet.</p>
+  <p><strong>Color scheme</strong> is Dark, Light, Slate, Forest, or Custom. Custom sets background, text, muted text, accent, and surface.</p>
+  <p><strong>Position</strong> is Top, Center, Bottom, a corner, or Custom. Custom is a horizontal and vertical percent, and the bar is centered on that point. The bar moves while you change it. Save keeps it. Esc restores the last saved scheme and position.</p>
+
+  <h2 id="type">What to type</h2>
+  <div class="wrap">
+  <table>
+    <thead><tr><th>Type this</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><code>2+2</code>, <code>sqrt(2)</code>, <code>sin(pi/2)</code>, <code>=1+1</code></td><td>Evaluated locally. Enter on the result copies it.</td></tr>
+      <tr><td><code>sin(x)</code>, <code>y = x^2</code>, <code>x = 3</code>, <code>x^2 = 4</code></td><td>Opens the graph. Equations list real solutions. Several expressions are separated with <code>;</code>.</td></tr>
+      <tr><td><code>d/dx cos x</code>, <code>int sinx dx from 0 to pi</code></td><td>Derivative or integral. Indefinite integrals are graphed with C = 0.</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd></td><td>Shows or hides the graph.</td></tr>
+      <tr><td><code>c:</code>, <code>d:</code>, <code>c:\Users</code>, <code>/</code>, <code>~</code></td><td>File search under that root.</td></tr>
+      <tr><td><code>chrome</code></td><td>Installed applications, then files when the query is at least 3 characters.</td></tr>
+      <tr><td><code>&gt; Get-Process</code></td><td>Shell. On Windows <code>&gt;</code> is PowerShell.</td></tr>
+      <tr><td><code>$ ls</code></td><td>On Windows, bash via Git Bash or WSL when one of those is installed.</td></tr>
+      <tr><td><code>y = x^2</code>, <code>x = 3</code>, <code>=sin(x)</code></td><td>Opens a graph window. Enter there adds another line on the same graph. A leading <code>=</code> opens the window as soon as the math is valid.</td></tr>
+      <tr><td><code>google.com</code></td><td>Enter opens that site. A leading space searches instead: <code> google.com</code> searches for <code>google.com</code>.</td></tr>
+      <tr><td><code>sleep</code></td><td>Enter puts the computer to sleep. A leading space searches instead.</td></tr>
+      <tr><td>anything else</td><td><strong>Search the web</strong> is the Enter action when nothing local is a strong match.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>On macOS and Linux, both <code>&gt;</code> and <code>$</code> use your login shell (<code>$SHELL</code>, or <code>/bin/sh</code>).</p>
+
+  <h2 id="math">Calculator</h2>
+  <p>Supported: <code>+ - * / ^ **</code>, parentheses, and juxtaposition such as <code>2x</code>, <code>sinx</code>, and <code>sin2x</code>. <code>^</code> is right-associative, so <code>2^3^2</code> is 512. <code>-3^2</code> is <code>-9</code>. Trig is in radians. <code>log</code> and <code>ln</code> are natural log. <code>log10</code> is base 10. <code>sin^2(x)</code> means <code>(sin(x))^2</code>.</p>
+  <p>Functions take parentheses, a space, or a following factor: <code>arcsin(1)</code>, <code>arcsin 1</code>, or <code>arcsinx</code>. Leading words such as <code>solve</code>, <code>plot</code>, <code>what is</code>, and <code>calculate</code> are ignored.</p>
+  <p>Typing <code>sum</code>, <code>prod</code>, or <code>lim</code> and then a space inserts that operator with the cursor in the body. <code>sum_{n=1}^{10} n</code> is 55. <code>lim_{x-&gt;0} sin(x)/x</code> is 1. <code>5!</code> is 120.</p>
+  <p>The <strong>∑</strong> button opens the function keys, one group at a time: Trig, Inverse, Hyperbolic, Calculus, Functions, and Symbols. Inverse includes <code>arcsin</code>, <code>arccos</code>, and <code>arctan</code>. Calculus includes derivatives, integrals, sums, products, and limits.</p>
+  <p>Real equations in <code>x</code> are solved and graphed. <code>x = 3</code> is a vertical line. <code>x^2 = 4</code> plots both sides and lists <code>x = -2</code> and <code>x = 2</code>. Lines and quadratics are exact. Other equations are solved numerically on [−20, 20]. <code>y = ...</code> and bare expressions in <code>x</code> are plotted as <code>y = f(x)</code>.</p>
+
+  <h2 id="graph">Graph</h2>
+  <p>Drag to pan. Scroll to zoom. Double-click or <strong>Reset</strong> restores the view. Hover shows an approximate point. Discontinuities such as <code>1/x</code> and <code>tan(x)</code> break the line.</p>
+
+  <h2 id="shell">Shell</h2>
+  <p>Typing a command never runs it. The first Enter on <strong>Run in shell</strong> only arms it. A second Enter runs it. <strong>Open in terminal</strong> does not need the extra confirm.</p>
+  <p>The inline runner waits at most 8 seconds, then stops the process. On Windows the inline shell is PowerShell with <code>-NoProfile</code>. Bash is used only when Git Bash or a WSL distro is present.</p>
+  <p><strong>Open in terminal</strong> uses Windows Terminal (<code>wt</code>) when it is on <code>PATH</code>, otherwise PowerShell. On macOS it uses Terminal.app. On Linux it tries <code>x-terminal-emulator</code> and then common terminals.</p>
+
+  <h2 id="files">Files and apps</h2>
+  <p>Applications come from the Start Menu on Windows, <code>/Applications</code>, <code>/System/Applications</code>, and <code>~/Applications</code> on macOS, and <code>.desktop</code> files on Linux.</p>
+  <p>File search is capped: about 80 ms debounce, depth 3, a few thousand directory visits, 30 results. <code>c:</code> lists the top of that drive. These directories are skipped unless you typed a path into them: <code>Windows</code>, <code>node_modules</code>, <code>.git</code>, <code>$Recycle.Bin</code>, <code>System Volume Information</code>, and on Unix <code>proc</code>, <code>sys</code>, and <code>dev</code>.</p>
+  <p>Without a path, files are searched only after 3 characters, and only under Desktop, Documents, Downloads, and a few other home folders. Enter on an app launches it. Enter on a file or folder opens it.</p>
+
+  <h2 id="build">Build and run</h2>
+  <p>You need Rust stable, Node.js 20 or newer, and a system web view: WebView2 on Windows, WebKit on macOS, WebKitGTK 4.1 on Linux.</p>
+  <p>On Debian or Ubuntu:</p>
+  <pre><code>sudo apt update
+sudo apt install -y libwebkit2gtk-4.1-dev build-essential libssl-dev \
+  libayatana-appindicator3-dev librsvg2-dev patchelf libxdo-dev</code></pre>
+  <pre><code>npm install
+npm run tauri dev</code></pre>
+  <p>The window stays hidden until <kbd>Alt</kbd>+<kbd>Space</kbd> or a left-click on the tray icon. <code>npm run tauri build</code> makes a production build.</p>
+
+  <h2 id="limits">Limits</h2>
+  <ul>
+    <li>One 2D explicit plotter. No 3D, and no implicit curves such as <code>x^2 + y^2 = 1</code>.</li>
+    <li>Symbolic calculus covers common derivatives and a limited set of integrals.</li>
+    <li>File search is capped and skips the heavy directories listed above.</li>
+    <li>The shell confirm and the 8 second inline timeout are intentional.</li>
+    <li>Alt+Space can lose to the Windows system menu. Change it in settings if that happens.</li>
+    <li>Launch at login is left for later.</li>
+  </ul>
+  <footer>TopCalc 0.1.0 · MIT · This file stands alone. Open it in any browser.</footer>
+</body>
+</html>

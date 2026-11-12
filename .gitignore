@@ -1,0 +1,23 @@
+# Node
+node_modules/
+dist/
+*.local
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+**/*.rs.bk
+
+# OS and editors
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+.idea/
+.vscode/
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
