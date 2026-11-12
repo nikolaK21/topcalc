@@ -42,6 +42,11 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: TopCalc v__VERSION__
-          releaseBody: Download the installer for your system and run it.
-          releaseDraft: true
+          releaseBody: |
+            Download the installer for your computer and run it.
+
+            Windows: the file ending in `setup.exe`.
+            macOS: the `.dmg`.
+            Linux: the `.deb` or `.AppImage`.
+          releaseDraft: false
           prerelease: false

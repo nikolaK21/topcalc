@@ -1,6 +1,7 @@
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 use crate::util::{home_dir, which};
@@ -103,8 +104,14 @@ pub fn run_inline(command: &str, flavor: ShellFlavor, timeout: Duration) -> Resu
     let mut child = cmd.spawn().map_err(|err| err.to_string())?;
     let mut stdout = child.stdout.take().ok_or("Could not read stdout")?;
     let mut stderr = child.stderr.take().ok_or("Could not read stderr")?;
-    let stdout_thread = std::thread::spawn(move || read_capped(&mut stdout, 16_000));
-    let stderr_thread = std::thread::spawn(move || read_capped(&mut stderr, 8_000));
+    let (out_tx, out_rx) = mpsc::channel();
+    let (err_tx, err_rx) = mpsc::channel();
+    std::thread::spawn(move || {
+        let _ = out_tx.send(read_capped(&mut stdout, 16_000));
+    });
+    std::thread::spawn(move || {
+        let _ = err_tx.send(read_capped(&mut stderr, 8_000));
+    });
 
     let started = Instant::now();
     let mut timed_out = false;
@@ -121,8 +128,9 @@ pub fn run_inline(command: &str, flavor: ShellFlavor, timeout: Duration) -> Resu
         }
     };
 
-    let stdout = stdout_thread.join().unwrap_or_default();
-    let stderr = stderr_thread.join().unwrap_or_default();
+    let grace = Duration::from_secs(2);
+    let stdout = out_rx.recv_timeout(grace).unwrap_or_default();
+    let stderr = err_rx.recv_timeout(grace).unwrap_or_default();
     let _ = child.wait();
     let code = status.and_then(|status| status.code());
     let mut output = String::new();

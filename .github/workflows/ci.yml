@@ -18,6 +18,7 @@ jobs:
       - run: npm run build
 
   rust:
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:

@@ -6,9 +6,11 @@ It is a quick search bar, a calculator, and an original 2D function grapher. It 
 
 The grapher is not GeoGebra and not Desmos. It does not reuse their source, assets, or names. GeoGebra is a large GPL Java desktop application, which is the opposite of a lightweight native launcher, so TopCalc ships its own small expression parser and plotter instead. The license is MIT.
 
-## Install on another computer
+## Install
 
-On Windows, open PowerShell in this folder and run:
+Download the installer for your computer from the [TopCalc releases](https://github.com/nikolaK21/topcalc/releases) page and run it. Windows uses the file ending in `setup.exe`. After it is installed, TopCalc stays in the tray and **Alt+Space** opens it.
+
+To build that installer yourself, open PowerShell in this folder and run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
@@ -20,9 +22,7 @@ On macOS or Linux:
 bash scripts/setup.sh
 ```
 
-The script installs Rust when it is missing, installs Node.js on Windows when that is missing, and builds an installer. The first build can take several minutes. The finished installer is under `src-tauri/target/release/bundle`. Copy that file to the other computer and run it. After it is installed, TopCalc stays in the tray. **Alt+Space** opens it.
-
-A draft installer is also published from the GitHub **Release** action. Download the file for that computer instead of building there.
+The script installs Rust when it is missing, installs Node.js on Windows when that is missing, and builds an installer. The first build can take several minutes. The finished installer is under `src-tauri/target/release/bundle`.
 
 ## Hotkey
 
