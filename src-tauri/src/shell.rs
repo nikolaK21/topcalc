@@ -131,7 +131,17 @@ pub fn run_inline(command: &str, flavor: ShellFlavor, timeout: Duration) -> Resu
     let grace = Duration::from_secs(2);
     let stdout = out_rx.recv_timeout(grace).unwrap_or_default();
     let stderr = err_rx.recv_timeout(grace).unwrap_or_default();
-    let _ = child.wait();
+    if timed_out {
+        let deadline = Instant::now() + Duration::from_secs(1);
+        while Instant::now() < deadline {
+            if child.try_wait().ok().flatten().is_some() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(30));
+        }
+    } else {
+        let _ = child.wait();
+    }
     let code = status.and_then(|status| status.code());
     let mut output = String::new();
     if !stdout.trim().is_empty() {

@@ -531,12 +531,17 @@ fn scan_desktop_files(out: &mut Vec<Hit>) {
         };
         for entry in entries.flatten() {
             let path = entry.path();
-            if path.extension().and_then(|ext| ext.to_str()) != Some("desktop") {
-                continue;
-            }
+        if path.extension().and_then(|ext| ext.to_str()) != Some("desktop") {
+            continue;
+        }
+        let Ok(meta) = entry.metadata() else {
+            continue;
+        };
+        if meta.is_file() {
             if let Some(hit) = parse_desktop_file(&path) {
                 out.push(hit);
             }
+        }
         }
     }
 }
