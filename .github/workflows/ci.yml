@@ -38,8 +38,15 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf \
-            libxdo-dev
+            libxdo-dev \
+            xvfb
       - name: Check
         run: cargo check --manifest-path src-tauri/Cargo.toml
       - name: Test
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+        if: runner.os == 'Linux'
+        run: xvfb-run -a cargo test --manifest-path src-tauri/Cargo.toml --lib
+        env:
+          WEBKIT_DISABLE_COMPOSITING_MODE: "1"
+      - name: Test
+        if: runner.os != 'Linux'
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib
